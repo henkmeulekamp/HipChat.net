@@ -464,7 +464,7 @@ namespace HipChat
                 throw new InvalidOperationException("You must set the Token property before calling the API.");
             #endregion validation
 
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsListUri());
+            var request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsListUri());
             return HttpUtils.CallApi(request);
         }
 
@@ -472,7 +472,7 @@ namespace HipChat
         /// Returns the list of available rooms as native C# objects
         /// </summary>
         /// <returns>A List<> containing strongly-typed Entities.Room objects</returns>
-        public List<Entities.Room> ListRoomsAsNativeObjects()
+        public List<Entities.Room> ListAllRooms()
         {
             this.Format = ApiResponseFormat.XML;
             XmlSerializer s = new XmlSerializer(typeof(Entities.Rooms));

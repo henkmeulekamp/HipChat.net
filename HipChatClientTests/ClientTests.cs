@@ -30,7 +30,7 @@ namespace HipChatClientTests
         public void TestAuthenticationException()
         {
             var client = new HipChatClient(){Token="XYZ", RoomId=123};
-            client.ListRooms();
+            client.ListAllRooms();
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace HipChatClientTests
         public void TestListRoomsAsNativeObjects()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, HipChat.HipChatClient.ApiResponseFormat.XML);
-            var rooms = client.ListRoomsAsNativeObjects();
+            var rooms = client.ListAllRooms();
             Assert.IsInstanceOfType(rooms, typeof(List<HipChat.Entities.Room>));
             Assert.IsTrue(rooms.Count > 0); //HACK: the number of rooms is variable, so just check that it's greater than 0 - bit if a hack
         }

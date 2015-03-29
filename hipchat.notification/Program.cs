@@ -16,19 +16,53 @@ namespace hipchat.notification
     {
         static void Main(string[] args)
         {
+            //System.Diagnostics.Debugger.Launch();
             try
             {
-                var strap = new Bootstrap(args);
-
-                if (!strap.IsValid())
+                var options = new ArgOptions();
+                if (! CommandLine.Parser.Default.ParseArguments(args, options))
                 {
-                    Console.WriteLine(strap.HelpMessage);
-                    Environment.Exit((int)ExitCode.InvalidArgs);
+                    Console.WriteLine(options.GetUsage());
+                    Environment.Exit((int)ExitCode.InvalidArgs);    
                 }
 
-                Console.WriteLine("Sending message '{0}' to room {1} from {2}",strap.Message,strap.RoomId,strap.From);
-                var client = new HipChat.HipChatClient(strap.Token);
-                client.SendMessage(strap.Message, strap.RoomId, strap.From); 
+                if(options.ShowHelp)
+                {
+                    Console.WriteLine(options.GetUsage());
+                    Environment.Exit((int)ExitCode.Success);
+                }
+                
+                //still here? either l or message
+                //todo move to better validation
+                if( !options.ListAllRooms 
+                   && (string.IsNullOrWhiteSpace(options.Message)) )
+                {
+                    Console.WriteLine(options.GetUsage());
+                    Environment.Exit((int)ExitCode.InvalidArgs);                   
+                }
+
+                //setup client
+                var client = new HipChat.HipChatClient(options.Token);
+         
+                if (options.ListAllRooms)
+                {
+                    var rooms = client.ListAllRooms();
+                   
+                    Console.WriteLine("Available rooms:");
+
+                    foreach (var room in rooms)
+                    {
+                        Console.WriteLine("- {0} (id={1} )", room.Name, room.Id);
+                    }
+
+                    Environment.Exit((int)ExitCode.Success);                    
+                }
+    
+                //only thing left is sending message
+                client.SendMessage(options.Message, options.RoomId, options.From); 
+
+
+                Console.WriteLine("Sending message '{0}' to room {1} from {2}",options.Message, options.RoomId, options.From);
 
                 Environment.Exit((int)ExitCode.Success);
 
